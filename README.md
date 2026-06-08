@@ -1,88 +1,46 @@
-# Task: Full-Stack Integration Testing (API → UI → Database)
+# QA Automation Interview Assignment
 
-## Scenario
+## Tasks Completed
 
-E-commerce platform: Marketing creates discount codes via API → Customers apply them at checkout → Transactions stored in PostgreSQL.
+### Task 1 - Code Review
 
-**Test flow:** API creates "SPRING25" (25% off Electronics) → UI applies discount → Database verifies order and audit log.
+Reviewed Playwright automation framework and documented code quality, maintainability, and reliability issues.
 
-## What You Need to Implement
+### Task 2 - Debugging Challenge
 
-The project provides skeleton classes with `NotImplementedException()`. Complete the following:
+Performed root cause analysis using:
 
-### 1. API Client (`tests/helpers/ApiClient.cs`)
-- `CreatePromotionAsync()` - POST /promotions
-- `GetPromotionAsync()` - GET /promotions/{id}
-- `DeletePromotionAsync()` - DELETE /promotions/{id}
+* CI logs
+* Network logs
+* UI evidence
 
-### 2. Database Helper (`tests/helpers/DatabaseHelper.cs`)
-- `Connect()` - PostgreSQL connection
-- `GetOrderById()` - Query orders table
-- `GetAuditLogByOrderId()` - Query audit log
-- `DeleteOrder()` - Cleanup
-- `VerifyOrderTotals()` - Verify amounts
+Identified flaky behavior caused by timeout configuration and slow pricing service responses.
 
-### 3. Page Object (`tests/PageObjects/CheckoutPage.cs`)
-- `NavigateAsync()` - Go to checkout
-- `ApplyPromoCodeAsync()` - Apply discount code
-- `GetOriginalPriceAsync()` - Read original price
-- `GetDiscountAmountAsync()` - Read discount
-- `GetFinalPriceAsync()` - Read final price
-- `VerifyDiscountApplied()` - Assert discount correct
-- `PlaceOrderAsync()` - Complete order
-- `IsErrorDisplayedAsync()` - Check errors
-- `GetErrorMessageAsync()` - Read error text
+### Task 3 - Full Stack Integration Testing
 
-### 4. Tests (`tests/PromotionFlowTests.cs`)
-- `TestFullPromotionFlowHappyPath()` - Complete API → UI → DB flow
-- `TestInvalidPromoCode()` - Invalid code rejection
-- `TestExpiredPromoCode()` - Expired code rejection
-- `TestWrongCategoryPromo()` - Category mismatch rejection
+Implemented:
 
-## API Endpoints
+* API Client
+* Database Helper
+* Checkout Page Object
+* Promotion Flow Tests
 
-**POST /admin/promotions** - Create promo
-```json
-{
-  "code": string,
-  "discountType": "PERCENTAGE" | "FIXED",
-  "discountValue": number,
-  "category": "ELECTRONICS" | "BOOKS" | ...,
-  "maxUses": number,
-  "validFrom": ISO8601 datetime,
-  "validUntil": ISO8601 datetime
-}
-→ {"promotionId": string, "code": string, "status": string}
+Validated API → UI → Database workflow.
+
+## Technology Stack
+
+* C#
+* .NET 8
+* Playwright
+* NUnit
+* PostgreSQL
+* Docker
+
+## Execution
+
+```bash
+docker compose up -d
+dotnet test
 ```
 
-**POST /orders** - Create order
-```json
-{
-  "customerEmail": string,
-  "productId": string,
-  "promotionCode": string
-}
-→ {"orderId": string, "originalAmount": decimal, "discountAmount": decimal, "finalAmount": decimal}
-```
-
-**Other:**
-- GET /admin/promotions/{id}, GET /promotions/code/{code}, DELETE /admin/promotions/{id}
-- POST /admin/reset (cleanup)
-
-## Services
-
-- API: http://localhost:3000 (health: `/health`)
-- UI: http://localhost:8080
-- PostgreSQL: localhost:5432 (db: `testshop`, user: `testuser`, pass: `testpass`)
-
-## Requirements
-
-- Complete all methods marked with `NotImplementedException`
-- All 4 tests must pass
-- **Tests must be idempotent** (can run multiple times without conflicts)
-  - Use `POST /admin/reset` in test setup/teardown
-  - Or use unique promotion codes per test run
-  - Or delete created promotions in cleanup
-- Proper cleanup in TearDown
-- No hardcoded values (use configuration)
-- Explicit waits (no Thread.Sleep)
+All tests pass successfully.
